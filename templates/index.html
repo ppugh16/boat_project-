@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boat Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="vessel-name">VESSEL — MV MOCKINGBIRD</span>
+    </div>
+    <div class="topbar-center">
+      <span id="clock">--:--:--</span>
+    </div>
+    <div class="topbar-right">
+      <span class="status-dot" id="conn-dot"></span>
+      <span id="conn-label">CONNECTING</span>
+    </div>
+  </header>
+
+  <main class="dashboard">
+
+    <!-- ROW 1: Primary instruments -->
+    <div class="card card--large" id="card-depth">
+      <div class="card-label">DEPTH</div>
+      <div class="card-value" id="depth">--.-</div>
+      <div class="card-unit">ft</div>
+      <div class="depth-bar-wrap">
+        <div class="depth-bar" id="depth-bar"></div>
+      </div>
+    </div>
+
+    <div class="card card--large" id="card-speed">
+      <div class="card-label">SPEED</div>
+      <div class="card-value" id="speed">--.-</div>
+      <div class="card-unit">mph</div>
+    </div>
+
+    <!-- Compass -->
+    <div class="card card--large card--compass">
+      <div class="card-label">HEADING</div>
+      <canvas id="compass" width="160" height="160"></canvas>
+      <div class="card-value" id="heading-val">---°</div>
+    </div>
+
+    <!-- ROW 2: Secondary data -->
+    <div class="card card--small">
+      <div class="card-label">WATER TEMP</div>
+      <div class="card-value card-value--sm" id="water-temp">--.-</div>
+      <div class="card-unit">°F</div>
+    </div>
+
+    <div class="card card--small">
+      <div class="card-label">BATTERY</div>
+      <div class="card-value card-value--sm" id="battery">--.-</div>
+      <div class="card-unit">V</div>
+      <div class="batt-bar-wrap">
+        <div class="batt-bar" id="batt-bar"></div>
+      </div>
+    </div>
+
+    <div class="card card--small">
+      <div class="card-label">GPS</div>
+      <div class="gps-coords">
+        <div class="gps-line" id="lat">---.------°N</div>
+        <div class="gps-line" id="lon">---.------°W</div>
+      </div>
+    </div>
+
+    <!-- ROW 3: Sonar graph — full width -->
+    <div class="card card--sonar">
+      <div class="card-label">SONAR — DEPTH TRACE</div>
+      <canvas id="sonar"></canvas>
+    </div>
+
+  </main>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>

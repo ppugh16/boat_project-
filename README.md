@@ -1,6 +1,7 @@
 # Gamrin Boat Dashboard
 
 ## Project Structure
+```
 boat-dashboard/
 ├── app.py
 ├── sensors.py
@@ -11,3 +12,4 @@ boat-dashboard/
 └── static/
     ├── style.css
     └── script.js
+```

@@ -1,187 +1,376 @@
 
+/* ============================================================
+   BOAT DASHBOARD — style.css
+   Marine instrument aesthetic.
+   ============================================================ */
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 :root {
-  --bg:        #070d0f;
-  --bg-card:   #0b1518;
-  --border:    #1a3a3f;
-  --green:     #00e5a0;
-  --green-dim: #007a55;
-  --amber:     #f5a623;
-  --red:       #e04040;
-  --text:      #c8e8e0;
-  --text-dim:  #4a7a70;
+  --bg:         #060d0f;
+  --bg-card:    #0a1518;
+  --border:     #1a3a3f;
+  --green:      #00e5a0;
+  --green-dim:  #007a55;
+  --amber:      #f5a623;
+  --red:        #e04040;
+  --text:       #c8e8e0;
+  --text-dim:   #4a7a70;
+
   --font-mono: 'Share Tech Mono', monospace;
   --font-disp: 'Orbitron', sans-serif;
 }
 
-html, body {
+html,
+body {
+  width: 100%;
   height: 100%;
+  overflow: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-mono);
-  overflow: hidden;
 }
 
-/* ── TOP BAR ─────────────────────────────────────────────── */
+/* ────────────────────────────────────────────────────────────
+   TOP BAR
+   ──────────────────────────────────────────────────────────── */
+
 .topbar {
+  height: 38px;
+  padding: 0 20px;
+  background: #040b0d;
+  border-bottom: 1px solid var(--border);
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 20px;
-  border-bottom: 1px solid var(--border);
-  background: #050b0d;
-  height: 40px;
 }
 
-.topbar-left  { font-size: 11px; color: var(--text-dim); letter-spacing: 0.12em; }
-.topbar-center { font-family: var(--font-disp); font-size: 16px; color: var(--green); letter-spacing: 0.1em; }
-.topbar-right { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; }
+.topbar-left {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.20em;
+}
+
+.topbar-center {
+  font-family: var(--font-disp);
+  font-size: 16px;
+  color: var(--green);
+  letter-spacing: 0.10em;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.10em;
+}
 
 .status-dot {
-  width: 8px; height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--text-dim);
-  transition: background 0.4s;
+  transition: background 0.3s;
 }
-.status-dot.live { background: var(--green); box-shadow: 0 0 6px var(--green); }
-.status-dot.dead { background: var(--red); }
 
-/* ── DASHBOARD GRID ──────────────────────────────────────── */
+.status-dot.live {
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+}
+
+.status-dot.dead {
+  background: var(--red);
+}
+
+/* ────────────────────────────────────────────────────────────
+   DASHBOARD GRID
+   ──────────────────────────────────────────────────────────── */
+
 .dashboard {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: auto auto auto;
-  gap: 10px;
-  padding: 10px;
-  height: calc(100vh - 40px);
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: 220px 180px 1fr;
+  gap: 8px;
+  padding: 8px;
+  height: calc(100vh - 38px);
 }
 
-/* ── CARDS ───────────────────────────────────────────────── */
+/* ────────────────────────────────────────────────────────────
+   CARDS
+   ──────────────────────────────────────────────────────────── */
+
 .card {
+  position: relative;
+  overflow: hidden;
+
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 14px 18px;
+
+  padding: 12px 16px;
+
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
 }
 
-/* Subtle scan-line overlay */
 .card::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
+  pointer-events: none;
+
   background: repeating-linear-gradient(
     0deg,
     transparent,
     transparent 3px,
-    rgba(0,229,160,0.015) 3px,
-    rgba(0,229,160,0.015) 4px
+    rgba(0, 229, 160, 0.012) 3px,
+    rgba(0, 229, 160, 0.012) 4px
   );
-  pointer-events: none;
 }
 
-.card--large  { grid-column: span 2; }
-.card--small  { grid-column: span 2; }
-.card--sonar  { grid-column: span 6; padding: 12px 16px; }
-.card--compass { justify-content: space-between; padding: 14px; }
+.card--large {
+  justify-content: center;
+}
+
+.card--small {
+  justify-content: flex-start;
+}
+
+.card--wide {
+  grid-column: 1 / 3;
+}
+
+.card--log {
+  grid-column: 3;
+}
 
 .card-label {
-  font-size: 10px;
-  letter-spacing: 0.18em;
+  font-size: 9px;
   color: var(--text-dim);
-  text-align: center;
-  margin-bottom: 6px;
-  align-self: flex-start;
-  width: 100%;
+  letter-spacing: 0.22em;
+  margin-bottom: 8px;
 }
 
 .card-value {
   font-family: var(--font-disp);
-  font-size: 52px;
+  font-size: 48px;
   font-weight: 700;
-  color: var(--green);
   line-height: 1;
-  letter-spacing: -0.02em;
-  text-shadow: 0 0 20px rgba(0,229,160,0.4);
-  transition: color 0.3s;
+  color: var(--green);
+  text-shadow: 0 0 20px rgba(0, 229, 160, 0.35);
 }
 
 .card-value--sm {
-  font-size: 38px;
+  font-size: 28px;
 }
 
 .card-unit {
-  font-size: 13px;
-  color: var(--text-dim);
   margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-dim);
   letter-spacing: 0.1em;
 }
 
-/* ── DEPTH BAR ───────────────────────────────────────────── */
+/* ────────────────────────────────────────────────────────────
+   DEPTH CARD
+   ──────────────────────────────────────────────────────────── */
+
 .depth-bar-wrap {
   width: 100%;
-  height: 4px;
+  height: 8px;
+  margin-top: 18px;
+
   background: var(--border);
-  border-radius: 2px;
-  margin-top: 10px;
+  border-radius: 4px;
   overflow: hidden;
-}
-.depth-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--green), var(--amber));
-  border-radius: 2px;
-  width: 30%;
-  transition: width 0.6s ease;
 }
 
-/* ── BATTERY BAR ─────────────────────────────────────────── */
-.batt-bar-wrap {
-  width: 100%;
-  height: 4px;
-  background: var(--border);
-  border-radius: 2px;
-  margin-top: 10px;
-  overflow: hidden;
-}
-.batt-bar {
+.depth-bar {
+  width: 50%;
   height: 100%;
   background: var(--green);
-  border-radius: 2px;
-  width: 80%;
-  transition: width 0.6s ease, background 0.4s;
+  border-radius: 4px;
+  transition: width 0.4s ease;
 }
 
-/* ── GPS ─────────────────────────────────────────────────── */
+/* ────────────────────────────────────────────────────────────
+   BATTERY
+   ──────────────────────────────────────────────────────────── */
+
+.batt-bar-wrap {
+  width: 100%;
+  height: 6px;
+  margin-top: 12px;
+
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.batt-bar {
+  width: 80%;
+  height: 100%;
+  background: var(--green);
+  border-radius: 3px;
+  transition: width 0.5s ease, background 0.3s ease;
+}
+
+/* ────────────────────────────────────────────────────────────
+   GPS
+   ──────────────────────────────────────────────────────────── */
+
 .gps-coords {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
 }
+
 .gps-line {
-  font-family: var(--font-mono);
-  font-size: 15px;
   color: var(--green);
-  letter-spacing: 0.05em;
+  font-size: 14px;
+  letter-spacing: 0.04em;
 }
 
-/* ── SONAR CANVAS ────────────────────────────────────────── */
-#sonar {
+/* ────────────────────────────────────────────────────────────
+   FISHING ADVISOR
+   ──────────────────────────────────────────────────────────── */
+
+.advisor-status {
+  margin-top: 10px;
+  margin-bottom: 14px;
+
+  color: var(--amber);
+  font-size: 13px;
+  font-style: italic;
+}
+
+.advisor-section {
+  margin-top: 12px;
+}
+
+.advisor-section .card-label {
+  margin-bottom: 4px;
+}
+
+.advisor-section div:last-child {
+  color: var(--green);
+  font-family: var(--font-disp);
+  font-size: 14px;
+}
+
+.advisor-update {
+  margin-top: auto;
+  padding-top: 14px;
+
+  text-align: right;
+  color: var(--text-dim);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+/* ────────────────────────────────────────────────────────────
+   TRIP TIMER
+   ──────────────────────────────────────────────────────────── */
+
+#trip-timer {
+  color: var(--green);
+  font-family: var(--font-disp);
+  text-shadow: 0 0 12px rgba(0, 229, 160, 0.30);
+}
+
+/* ────────────────────────────────────────────────────────────
+   LOG CATCH PANEL
+   ──────────────────────────────────────────────────────────── */
+
+.card--log form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.card--log label {
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 0.18em;
+}
+
+.card--log select {
   width: 100%;
-  height: 90px;
-  display: block;
+  padding: 8px;
+
+  background: #081214;
+  color: var(--green);
+
+  border: 1px solid var(--border);
+  border-radius: 4px;
+
+  font-family: var(--font-mono);
+  font-size: 12px;
 }
 
-/* ── COMPASS CANVAS ──────────────────────────────────────── */
-#compass { display: block; }
+.card--log select:focus {
+  outline: none;
+  border-color: var(--green);
+  box-shadow: 0 0 8px rgba(0, 229, 160, 0.25);
+}
 
-/* ── WARNING STATES ──────────────────────────────────────── */
-.card--warn .card-value { color: var(--amber); text-shadow: 0 0 16px rgba(245,166,35,0.5); }
-.card--danger .card-value { color: var(--red); text-shadow: 0 0 16px rgba(224,64,64,0.5); }
+.button-row {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.button-row button {
+  flex: 1;
+  padding: 10px;
+
+  background: rgba(0, 229, 160, 0.08);
+  color: var(--green);
+
+  border: 1px solid var(--green);
+  border-radius: 4px;
+
+  cursor: pointer;
+
+  font-family: var(--font-disp);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.1s ease;
+}
+
+.button-row button:hover {
+  background: rgba(0, 229, 160, 0.18);
+  box-shadow: 0 0 12px rgba(0, 229, 160, 0.20);
+}
+
+.button-row button:active {
+  transform: scale(0.98);
+}
+
+/* ────────────────────────────────────────────────────────────
+   WARNING STATES
+   ──────────────────────────────────────────────────────────── */
+
+.card--warn .card-value {
+  color: var(--amber);
+  text-shadow: 0 0 16px rgba(245, 166, 35, 0.4);
+}
+
+.card--danger .card-value {
+  color: var(--red);
+  text-shadow: 0 0 16px rgba(224, 64, 64, 0.4);
+}

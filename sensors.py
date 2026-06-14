@@ -9,6 +9,7 @@ import random
 import math
 import time
 import threading
+import advisor
 
 """
 sensor_data: is a dictionary that holds the "fake" sensor readings. In a real implementation, you'd update this with actual hardware readings.
@@ -24,6 +25,7 @@ sensor_data = {
     "water_temp": 68.2,   # °F
     "battery":    12.6,   # volts
     "timestamp":    "",
+    "advisor":      {},
 }
 
 """
@@ -39,7 +41,8 @@ _mock = {
 """
 read_sensors: the main function that updates every key in sensor_data. 
 """
-
+_last_advisor_update = 0
+ 
 def read_sensors():
     """Update sensor_data with the latest readings."""
 
@@ -80,6 +83,12 @@ def read_sensors():
     )
 
     sensor_data["timestamp"] = time.strftime("%H:%M:%S")
+
+    now = time.time()
+    if now - _last_advisor_update >= 30:
+        advice = advisor.get_advice(sensor_data)
+        sensor_data["advisor"] = advice["advisor"]
+        _last_advisor_update = now
 
 """
 this loop runs infinietly. Calls the functions then waits half a second then calls again.

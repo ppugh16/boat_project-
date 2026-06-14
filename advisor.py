@@ -1,6 +1,7 @@
 from datetime import datetime, time
 from astral import LocationInfo
 from astral.sun import sun
+from zoneinfo import ZoneInfo
 
 LOCATION = LocationInfo(
     name      = "North Augusta",
@@ -10,6 +11,14 @@ LOCATION = LocationInfo(
     longitude = -81.9652,
 )
     
+FALLBACK = {
+    "species": ["Bass", "Catfish"],
+    "baits": [
+        {"bait": "Plastic Worm",    "reason": "reliable all-conditions bass bait"},
+        {"bait": "Nightcrawler",    "reason": "catches almost anything in freshwater"},
+    ],
+    "tip": "Check your conditions and try structure near deep water."
+}
 
 #Reccomendation Engine 
 #Rule based
@@ -722,11 +731,31 @@ RULES = {
     },
 } 
 
+def get_season(month):
+    if month in [12,1,2]:
+        return "winter"
+    elif month in [3,4,5]:
+        return "spring"
+    elif month in [6,7,8]:
+        return "summer"
+    else:
+        return "fall"
+    
+
+def get_temp(temp_f):
+    if temp_f < 50: 
+        return "cold"
+    elif temp_f < 60:
+        return "cool"
+    elif temp_f < 75:
+        return "prime"
+    else: 
+        return "warm"
+    
 
 #astral calculations
 def get_time_of_day(target_dt): 
     sun_fun = sun(LOCATION.observer,date=target_dt.date(), tzinfo=LOCATION.timezone)
-
     dawn = sun_fun['dawn']
     sunrise = sun_fun['sunrise']
     noon = sun_fun['noon']
@@ -748,22 +777,40 @@ def get_time_of_day(target_dt):
     
 
 
-temp_f = sensor_data.get("water_temp", 68)#68 is a fallback value in case a temp doesn't exsist
-
-def get_temp(temp_f):
-    if temp_f < 50: 
-        return "cold"
-    elif temp_f < 60:
-        return "cool"
-    elif temp_f < 75:
-        return "primetime"
-    else: 
-        return "warm"
-
 def search_Rules(season,temp_f, target_dt):
 
     season_node = RULES.get(season,None)
-
+    if season_node is None:
+        return FALLBACK
     temp_range = get_temp(temp_f)
-
     time_of_day = get_time_of_day(target_dt)
+    temp_node = season_node.get(temp_range, next(iter(season_node.values())))
+    return temp_node.get(time_of_day, next(iter(temp_node.values())))
+
+
+def get_advice(sensor_data):
+    now      = datetime.now(tz=ZoneInfo("America/New_York"))
+    month    = now.month
+    
+    # get season from month
+    season   = get_season(month)
+    
+    temp_f   = sensor_data.get("water_temp", 68)#68 is a fallback value in case a temp doesn't exsist
+    
+    time_of_day = get_time_of_day(now)
+
+    result   = search_Rules(season, temp_f, now)
+    
+    return {
+        "advisor": {
+            "active_species": [{"species": s, "active": True, "reason": ""} for s in result["species"]],
+            "baits":          result["baits"],
+            "tip":            result["tip"],
+            "conditions": {
+                "season":      season,
+                "temp_f":      temp_f,
+                "time_of_day": time_of_day,
+            },
+            "updated": now.strftime("%H:%M:%S"),
+        }
+    }

@@ -12,7 +12,7 @@
 
   <header class="topbar">
     <div class="topbar-left">
-      <span class="vessel-name">VESSEL — MV MOCKINGBIRD</span>
+      <span class="vessel-name">VESSEL — {{ config.vessel_name }}</span>
     </div>
     <div class="topbar-center">
       <span id="clock">--:--:--</span>
@@ -25,7 +25,7 @@
 
   <main class="dashboard">
 
-    <!-- ROW 1: Primary instruments -->
+    <!-- ROW 1 -->
     <div class="card card--large" id="card-depth">
       <div class="card-label">DEPTH</div>
       <div class="card-value" id="depth">--.-</div>
@@ -33,26 +33,6 @@
       <div class="depth-bar-wrap">
         <div class="depth-bar" id="depth-bar"></div>
       </div>
-    </div>
-
-    <div class="card card--large" id="card-speed">
-      <div class="card-label">SPEED</div>
-      <div class="card-value" id="speed">--.-</div>
-      <div class="card-unit">mph</div>
-    </div>
-
-    <!-- Compass -->
-    <div class="card card--large card--compass">
-      <div class="card-label">HEADING</div>
-      <canvas id="compass" width="160" height="160"></canvas>
-      <div class="card-value" id="heading-val">---°</div>
-    </div>
-
-    <!-- ROW 2: Secondary data -->
-    <div class="card card--small">
-      <div class="card-label">WATER TEMP</div>
-      <div class="card-value card-value--sm" id="water-temp">--.-</div>
-      <div class="card-unit">°F</div>
     </div>
 
     <div class="card card--small">
@@ -67,19 +47,78 @@
     <div class="card card--small">
       <div class="card-label">GPS</div>
       <div class="gps-coords">
-        <div class="gps-line" id="lat">---.------°N</div>
-        <div class="gps-line" id="lon">---.------°W</div>
+        <div class="gps-line" id="lat">---.------° N</div>
+        <div class="gps-line" id="lon">---.------° W</div>
       </div>
     </div>
 
-    <!-- ROW 3: Sonar graph — full width -->
-    <div class="card card--sonar">
-      <div class="card-label">SONAR — DEPTH TRACE</div>
-      <canvas id="sonar"></canvas>
+    <!-- ROW 2 -->
+    <div class="card card--wide">
+      <div class="card-label">FISHING ADVISOR</div>
+      <div class="card-value card-value--sm" id="advisor-summary">
+        -- • -- • --°F
+      </div>
+      <div class="advisor-status" id="advisor-status">
+        Waiting for conditions...
+      </div>
+
+      <div class="advisor-section">
+        <div class="card-label">LIKELY ACTIVE</div>
+        <div id="likely-active">--</div>
+      </div>
+
+      <div class="advisor-section">
+        <div class="card-label">SUGGESTED BAITS</div>
+        <div id="suggested-baits">--</div>
+      </div>
+
+      <div class="advisor-update">
+        Updated <span id="advisor-updated">--:--:--</span>
+      </div>
+    </div>
+
+    <div class="card card--small">
+      <div class="card-label">TRIP TIMER</div>
+      <div class="card-value card-value--sm" id="trip-timer">
+        0:00:00
+      </div>
+    </div>
+
+    <!-- ROW 3 -->
+    <div class="card card--log">
+      <div class="card-label">LOG CATCH</div>
+
+      <form id="catch-form" method="POST" action="/api/log_catch">
+
+        <label for="species">SPECIES</label>
+        <select id="species" name="species">
+          {% for species in config.species_list %}
+            <option value="{{ species }}">{{ species }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="bait">BAIT USED</label>
+        <select id="bait" name="bait">
+          {% for bait in config.bait_list %}
+            <option value="{{ bait }}">{{ bait }}</option>
+          {% endfor %}
+        </select>
+
+        <div class="button-row">
+          <button type="button" onclick="this.form.reset();">
+            CANCEL
+          </button>
+          <button type="submit">
+            SAVE CATCH
+          </button>
+        </div>
+
+      </form>
     </div>
 
   </main>
 
   <script src="/static/script.js"></script>
+
 </body>
 </html>

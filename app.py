@@ -1,43 +1,90 @@
 """
-Imports all necessary flask libraries
-Imports sensors file 
+app.py
+=======
+Flask routes only. No sensor logic lives here.
+
+Run:  python3 app.py
+Open: http://localhost:5000
 """
 
-from flask import Flask, render_template, Response, jsonify
+from flask import Flask, render_template, Response, jsonify, request
 import json
 import time
 
 import sensors
 
-"""
-starts the background thread befores accpting any requests
-"""
 app = Flask(__name__)
-
 sensors.start()
 
-"""
-HTML page when somone visits the URL 
-"""
+# ---------------------------------------------------------------------------
+# DASHBOARD CONFIG
+# ---------------------------------------------------------------------------
+
+config = {
+    "vessel_name": "MV MOCKINGBIRD",
+    "species_list": [
+        "Largemouth Bass",
+        "Striped Bass",
+        "Crappie",
+        "Bluegill",
+        "Catfish"
+    ],
+    "bait_list": [
+        "Plastic Worm",
+        "Spinnerbait",
+        "Crankbait",
+        "Jig",
+        "Live Minnow"
+    ]
+}
+
+# ---------------------------------------------------------------------------
+# ROUTES
+# ---------------------------------------------------------------------------
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html", config=config)
 
-"""
-Returns the current sensor data
-"""
+
 @app.route("/api/data")
 def api_data():
-    """JSON snapshot of current readings. Handy for debugging in the browser."""
+    """JSON snapshot — open in browser to debug sensor values."""
     return jsonify(sensors.sensor_data)
 
 
-"""
-"server-sent events": this route is used to real-time update the dashboard. It yields chunkks of data so that the connection can stay open and update whenever new data is ready
-"""
+@app.route("/api/log-catch", methods=["POST"])
+def log_catch():
+    """
+    Receives a catch log from the dashboard form.
+    Stores current GPS, depth, and water temperature alongside
+    the selected species and bait.
+    """
+    body = request.form
+
+    catch = {
+        "timestamp":  time.strftime("%Y-%m-%d %H:%M:%S"),
+        "species":    body.get("species", "Unknown"),
+        "bait":       body.get("bait", "Unknown"),
+        "lat":        sensors.sensor_data.get("lat"),
+        "lon":        sensors.sensor_data.get("lon"),
+        "depth":      sensors.sensor_data.get("depth"),
+        "water_temp": sensors.sensor_data.get("water_temp"),
+    }
+
+    # TODO: Replace this with database storage later.
+    print(f"CATCH LOGGED: {catch}")
+
+    return jsonify({
+        "status": "ok",
+        "message": "Catch logged successfully.",
+        "catch": catch
+    })
+
+
 @app.route("/stream")
 def stream():
+    """SSE — browser connects once, we push data every 500 ms."""
     def generate():
         while True:
             yield f"data: {json.dumps(sensors.sensor_data)}\n\n"
@@ -47,11 +94,19 @@ def stream():
         generate(),
         mimetype="text/event-stream",
         headers={
-            "Cache-Control":    "no-cache",
-            "X-Accel-Buffering": "no",
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no"
         }
     )
 
 
+# ---------------------------------------------------------------------------
+# ENTRY POINT
+# ---------------------------------------------------------------------------
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=False
+    )
